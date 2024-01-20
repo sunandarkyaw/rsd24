@@ -24,9 +24,9 @@ export default function Edit({ update }) {
                     onChange={e => {
                         setSubject(e.target.value);
                     }}
-                    sx={{ mb: 4 }} fullWidth inputRef={inputRef}
+                    sx={{ mb: 4 }} fullWidth //inputRef={inputRef}
                     endAdornment={
-                        <IconButton>
+                        <IconButton type="submit">
                             <SaveIcon />
                         </IconButton>
                     } />
