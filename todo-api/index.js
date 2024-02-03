@@ -6,6 +6,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 //extended: false => node ရဲ့ default parser ကိုပဲ သုံးပါမယ်
 app.use(bodyParser.json());
 
+const cors=require("cors");
+app.use(cors());
+// app.header("Access-control-allow-origin","*");
+// app.header("Access-control-allow-methods","*");
+
 const { MongoClient, ObjectId } = require("mongodb");
 const client = new MongoClient("mongodb://localhost:27017");
 

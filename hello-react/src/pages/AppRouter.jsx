@@ -2,7 +2,9 @@ import App from './App.jsx';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Edit from './Edit.jsx';
 import AppRoot from "./AppRoot.jsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const api = "http://localhost:8888/tasks";
 
 export default function AppRouter() {
     const [list, setList] = useState([
@@ -11,6 +13,11 @@ export default function AppRouter() {
         { _id: 3, subject: 'Mango', done: false },
     ]);
 
+    useEffect(() => {
+        fetch(api)
+            .then(res => res.json())
+            .then(json => setList(json));
+    }, []);
     const add = subject => {
         const _id = list[list.length - 1]._id + 1
         setList([...list, { _id, subject: subject, done: false }]);
