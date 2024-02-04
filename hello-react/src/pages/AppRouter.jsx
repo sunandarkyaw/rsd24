@@ -7,24 +7,44 @@ import { useEffect, useState } from "react";
 const api = "http://localhost:8888/tasks";
 
 export default function AppRouter() {
-    const [list, setList] = useState([
-        { _id: 1, subject: 'Apple', done: false },
-        { _id: 2, subject: 'Avocado', done: true },
-        { _id: 3, subject: 'Mango', done: false },
-    ]);
+    const [list, setList] = useState([]);
+    const [isLoading, setIsLoaing] = useState(true);
 
     useEffect(() => {
-        fetch(api)
-            .then(res => res.json())
-            .then(json => setList(json));
+        (async () => {
+            const res = await fetch(api);
+            const data = await res.json();
+            setList(data);
+            setIsLoaing(false);
+        })();
     }, []);
-    const add = subject => {
-        const _id = list[list.length - 1]._id + 1
-        setList([...list, { _id, subject: subject, done: false }]);
+
+    const add = async (subject) => {
+        if (!subject) return false;
+
+        const res = await fetch(api, {
+            method: 'post',
+            body: JSON.stringify({ subject }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const data = await res.json();
+        setList([...list, data]);
     }
 
-    const update = (_id, subject) => {
+    const update = async (_id, subject) => {
         if (!subject) return false;
+
+        const res = await fetch(`${api}/${_id}`, {
+            method: 'put',
+            body: JSON.stringify({ subject }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
         setList(list.map(item => {
             if (item._id === _id) item.subject = subject;
             return item;
@@ -32,8 +52,9 @@ export default function AppRouter() {
         ));
     }
 
-    const remove = id => {
-        setList(list.filter(n => n._id !== id));
+    const remove = _id => {
+        fetch(`${api}/${_id}`, { method: 'delete' });
+        setList(list.filter(n => n._id !== _id));
     }
 
     const toggle = _id => {
@@ -50,7 +71,7 @@ export default function AppRouter() {
     const routes = createBrowserRouter([
         {
             path: "/",
-            element: <AppRoot list={list} clear={clear} />,
+            element: <AppRoot isLoading={isLoading} list={list} clear={clear} />,
             children: [
                 {
                     path: "/",
