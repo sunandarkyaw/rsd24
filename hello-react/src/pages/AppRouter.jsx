@@ -57,7 +57,11 @@ export default function AppRouter() {
         setList(list.filter(n => n._id !== _id));
     }
 
-    const toggle = _id => {
+    const toggle = async(_id) => {
+        const res = await fetch(`${api}/toggle/${_id}`, {
+            method: 'put',
+        });
+
         setList(list.map(item => {
             if (item._id == _id) item.done = !item.done;
             return item;
@@ -65,6 +69,7 @@ export default function AppRouter() {
     }
 
     const clear = () => {
+        fetch(api, { method: 'delete' });
         setList(list.filter(item => !item.done));
     }
 
