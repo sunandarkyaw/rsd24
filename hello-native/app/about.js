@@ -18,8 +18,6 @@ const styles = StyleSheet.create({
 
 export default function About() {
     return <View>
-            <View style={styles.header}>
-                <Text style={styles.title}>About</Text>
-            </View>
+            <Text>About</Text>
         </View>
 }
