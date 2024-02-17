@@ -1,19 +1,29 @@
-import { View, Text, TextInput, Button, TouchableOpacity, StyleSheet } from "react-native";
-import { useEffect, useState } from "react";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+import {
+    View,
+    Text,
+    TextInput,
+    Button,
+    TouchableOpacity,
+    StyleSheet,
+} from "react-native";
 import { Link } from "expo-router";
+
+import { useEffect, useState } from "react";
+
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 const styles = StyleSheet.create({
     list: {
         borderWidth: 1,
-        borderColor: '#ddd',
-        margin: 20,
+        borderColor: "#ddd",
+        margin: 15,
     },
     listItem: {
-        flexDirection: 'row',
+        flexDirection: "row",
         padding: 15,
         borderBottomWidth: 1,
-        borderBottomColor: '#ddd',
+        borderBottomColor: "#ddd",
+        alignItems: "center",
     },
     itemText: {
         flexGrow: 1,
@@ -21,20 +31,21 @@ const styles = StyleSheet.create({
     },
     form: {
         margin: 15,
-        flexDirection: 'row',
+        flexDirection: "row",
     },
     input: {
         flexGrow: 1,
-        padding: 10,
-        backgroundColor: '#ddd',
+        paddingLeft: 10,
+        backgroundColor: "#ddd",
         fontSize: 18,
     },
-})
+});
+
+const api = "http://192.168.100.116:8888/tasks";
 
 export default function App() {
-    const [subject, setSubject] = useState('');
+    const [subject, setSubject] = useState("");
     const [tasks, setTasks] = useState([]);
-    const api = "http://192.168.220.124:8888/tasks";
 
     useEffect(() => {
         (async () => {
@@ -43,53 +54,146 @@ export default function App() {
 
             setTasks(data);
         })();
-    }, [])
+    }, []);
 
     const add = async () => {
         const res = await fetch(api, {
-            method: 'POST',
+            method: "POST",
             body: JSON.stringify({ subject }),
             headers: {
-                'Content-Type': 'application/json',
-            }
+                "Content-Type": "application/json",
+            },
         });
-        const data = await res.json();
-        setTasks([...tasks, data]);
-        setSubject('');
-    }
 
-    // const toggle = async _id => {
-    //     await fetch(`${api}/toggle/${_id}`, {
-    //         method: 'PUT',
-    //         body: JSON.stringify({ subject }),
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //         }
-    //     });
-    // }
+        const data = await res.json();
+
+        setTasks([...tasks, data]);
+        setSubject("");
+    };
+
+    const toggle = async _id => {
+        await fetch(`${api}/toggle/${_id}`, {
+            method: 'PUT',
+        });
+
+        setTasks(
+            tasks.map(item => {
+                if (item._id === _id) item.done = !item.done;
+                return item;
+            })
+        );
+    };
 
     return (
         <View>
             <View style={styles.form}>
-                <TextInput style={styles.input} value={subject} onChangeText={setSubject} />
-                <Button title="Add" onPress={add} />
+                <TextInput
+                    style={styles.input}
+                    value={subject}
+                    onChangeText={setSubject}
+                />
+                <Button
+                    title="ADD"
+                    onPress={add}
+                />
             </View>
+
             <View style={styles.list}>
-                {tasks.map(item => (
-                    <View style={styles.listItem} key={item._id}>
-                        <Text style={styles.itemText}>{item.subject}</Text>
-                        <Link href={`/edit/${item._id}`} style={{ marginRight: 10 }} >
-                            <FontAwesome name="edit" style={{ fontSize: 18, color: "teal" }} />
-                        </Link>
-                        <TouchableOpacity onPress={() => {
-                            setTasks(tasks.filter(x => {
-                                return x.id != item.id;
-                            }))
-                        }}>
-                            <FontAwesome name="trash" style={{ fontSize: 18, color: "salmon" }} />
-                        </TouchableOpacity>
-                    </View>
-                ))}
+                {tasks
+                    .filter(item => !item.done)
+                    .map(item => (
+                        <View
+                            style={styles.listItem}
+                            key={item._id}>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    toggle(item._id);
+                                }}>
+                                <FontAwesome
+                                    name="check"
+                                    style={{
+                                        fontSize: 18,
+                                        color: "#999",
+                                        marginRight: 10,
+                                    }}
+                                />
+                            </TouchableOpacity>
+
+                            <Text style={styles.itemText}>{item.subject}</Text>
+
+                            <Link
+                                href={`/edit/${item._id}`}
+                                style={{ marginRight: 10 }}>
+                                <FontAwesome
+                                    name="edit"
+                                    style={{ fontSize: 18, color: "teal" }}
+                                />
+                            </Link>
+
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setTasks(
+                                        tasks.filter(task => {
+                                            return task._id !== item._id;
+                                        })
+                                    );
+                                }}>
+                                <FontAwesome
+                                    name="trash"
+                                    style={{ fontSize: 18, color: "salmon" }}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    ))}
+            </View>
+
+            <View style={styles.list}>
+                {tasks
+                    .filter(item => item.done)
+                    .map(item => (
+                        <View
+                            style={styles.listItem}
+                            key={item._id}>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    toggle(item._id);
+                                }}>
+                                <FontAwesome
+                                    name="check"
+                                    style={{
+                                        fontSize: 18,
+                                        color: "green",
+                                        marginRight: 10,
+                                    }}
+                                />
+                            </TouchableOpacity>
+
+                            <Text style={[styles.itemText, { color: '#aaa' }]}>{item.subject}</Text>
+
+                            <Link
+                                href={`/edit/${item._id}`}
+                                style={{ marginRight: 10 }}>
+                                <FontAwesome
+                                    name="edit"
+                                    style={{ fontSize: 18, color: "teal" }}
+                                />
+                            </Link>
+
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setTasks(
+                                        tasks.filter(task => {
+                                            return task._id !== item._id;
+                                        })
+                                    );
+                                }}>
+                                <FontAwesome
+                                    name="trash"
+                                    style={{ fontSize: 18, color: "salmon" }}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    ))}
             </View>
         </View>
     );

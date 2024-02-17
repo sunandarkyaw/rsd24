@@ -1,6 +1,7 @@
+import { View, Text, TextInput, Button } from "react-native";
+
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { View, Text, TextInput, Button } from "react-native";
 
 const api = "http://192.168.220.124:8888/tasks";
 
@@ -17,13 +18,14 @@ export default function Edit() {
     }, []);
 
     return <View style={{ flexDirection: 'row', padding: 20 }}>
-        <TextInput style={{ flexGrow: 1, backgroundColor: '#ddd', paddingLeft: 10 }} value={subject} onChangeText={setSubject} />
+        <TextInput style={{ flexGrow: 1, backgroundColor: '#ddd', paddingLeft: 10 }}
+            value={subject} onChangeText={setSubject} />
         <Button title="Save" onPress={async () => {
             const res = await fetch(`${api}/${id}`, {
                 method: 'PUT',
                 body: JSON.stringify({ subject }),
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 }
             });
 
