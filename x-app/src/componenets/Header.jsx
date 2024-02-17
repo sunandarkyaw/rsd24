@@ -9,7 +9,7 @@ import { useUIState } from "../providers/UIStateProvider";
 export default function Header() {
     const { setOpenDrawer } = useUIState(true);
 
-    return <AppBar position="static">
+    return <AppBar position="static" sx={{ bgcolor: "background" }}>
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
             <IconButton edge="start" color="inherit" onClick={() => {
                 setOpenDrawer(true);
@@ -18,10 +18,10 @@ export default function Header() {
             </IconButton>
             <XIcon />
             <Box>
-                <IconButton>
+                <IconButton color="inherit">
                     <DarkModeIcon />
                 </IconButton>
-                <IconButton>
+                <IconButton color="inherit" edge="end">
                     <NotiIcon />
                 </IconButton>
             </Box>
