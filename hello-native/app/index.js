@@ -1,5 +1,5 @@
 import { View, Text, TextInput, Button, TouchableOpacity, StyleSheet } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Link } from "expo-router";
 
@@ -33,17 +33,41 @@ const styles = StyleSheet.create({
 
 export default function App() {
     const [subject, setSubject] = useState('');
-    const [tasks, setTasks] = useState([
-        { id: 1, subject: 'Apple', done: false },
-        { id: 2, subject: 'Orange', done: false },
-        { id: 3, subject: 'Mango', done: false },
-        { id: 4, subject: 'Banana', done: false },
-    ]);
-    const add = () => {
-        const id = (tasks.length > 0) ? tasks[tasks.length - 1].id + 1 : 1;
-        setTasks([...tasks, { id, subject, done: false }]);
+    const [tasks, setTasks] = useState([]);
+    const api = "http://192.168.220.124:8888/tasks";
+
+    useEffect(() => {
+        (async () => {
+            const res = await fetch(api);
+            const data = await res.json();
+
+            setTasks(data);
+        })();
+    }, [])
+
+    const add = async () => {
+        const res = await fetch(api, {
+            method: 'POST',
+            body: JSON.stringify({ subject }),
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        const data = await res.json();
+        setTasks([...tasks, data]);
         setSubject('');
     }
+
+    // const toggle = async _id => {
+    //     await fetch(`${api}/toggle/${_id}`, {
+    //         method: 'PUT',
+    //         body: JSON.stringify({ subject }),
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         }
+    //     });
+    // }
+
     return (
         <View>
             <View style={styles.form}>
@@ -52,9 +76,9 @@ export default function App() {
             </View>
             <View style={styles.list}>
                 {tasks.map(item => (
-                    <View style={styles.listItem} key={item.id}>
+                    <View style={styles.listItem} key={item._id}>
                         <Text style={styles.itemText}>{item.subject}</Text>
-                        <Link href="/edit" style={{ marginRight: 10 }} >
+                        <Link href={`/edit/${item._id}`} style={{ marginRight: 10 }} >
                             <FontAwesome name="edit" style={{ fontSize: 18, color: "teal" }} />
                         </Link>
                         <TouchableOpacity onPress={() => {

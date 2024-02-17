@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet } from "react-native";
 import { Slot, usePathname } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Link } from "expo-router";
 
@@ -26,16 +27,17 @@ const styles = StyleSheet.create({
     }
 });
 
-export default function App(){
+export default function App() {
     const pathname = usePathname();
- 
+
     return <View>
         <View style={styles.header}>
-            {pathname === "/"?
-            (<FontAwesome style={styles.logo} name="list"/>):
-            (<Link href="/" style = {styles.logo}><FontAwesome style={styles.logo} name="arrow-left"/></Link>)}
+            {pathname === "/" ?
+                (<FontAwesome style={styles.logo} name="list" />) :
+                (<Link href="/" style={styles.logo}><FontAwesome style={styles.logo} name="arrow-left" /></Link>)}
             <Text style={styles.title}>Todo</Text>
         </View>
-        <Slot/>
+        <Slot />
+        <StatusBar style="light" />
     </View>
 }

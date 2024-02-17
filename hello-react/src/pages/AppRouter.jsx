@@ -10,6 +10,8 @@ export default function AppRouter() {
     const [list, setList] = useState([]);
     const [isLoading, setIsLoaing] = useState(true);
 
+    console.log(import.meta.env.VITE_API);
+
     useEffect(() => {
         (async () => {
             const res = await fetch(api);
@@ -57,7 +59,7 @@ export default function AppRouter() {
         setList(list.filter(n => n._id !== _id));
     }
 
-    const toggle = async(_id) => {
+    const toggle = async (_id) => {
         const res = await fetch(`${api}/toggle/${_id}`, {
             method: 'put',
         });
