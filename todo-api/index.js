@@ -19,9 +19,7 @@ const tasks = db.collection("tasks");
 
 app.get('/tasks', async (req, res) => {
     const data = await tasks.find().toArray();
-    setTimeout(() => {
-        return res.json(data);
-    }, 3000);
+    return res.json(data);
 });
 
 app.get('/tasks/:id', async (req, res) => {

@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     },
 });
 
-const api = "http://192.168.100.116:8888/tasks";
+const api = "http://192.168.220.124:8888/tasks";
 
 export default function App() {
     const [subject, setSubject] = useState("");
