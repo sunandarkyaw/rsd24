@@ -74,7 +74,10 @@ export default function AppDrawer() {
                 </ListItem>
 
                 <ListItem>
-                    <ListItemButton>
+                    <ListItemButton onClick={() => {
+                        navigate("/register");
+                        setOpenDrawer(false);
+                    }}>
                         <ListItemIcon>
                             <RegisterIcon />
                         </ListItemIcon>
