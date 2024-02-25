@@ -8,8 +8,7 @@ export default function Login() {
     const handleRef = useRef();
     const passwordRef = useRef();
     const [hasError, sethasError] = useState(false);
-    const { auth, setAuth } = useAuth();
-    const { authUser, setAuthUser } = useAuth();
+    const { auth, setAuth, authUser, setAuthUser } = useAuth();
     const [errormessage, seterrormessage] = useState('');
     const navigate = useNavigate();
 
@@ -26,22 +25,22 @@ export default function Login() {
             },
         });
 
-        if (res.ok) {            
+        if (res.ok) {
             const data = await res.json();
             localStorage.setItem("token", data.token);
 
-            const resp = await fetch(`${api}/verify`, {
+            fetch(`${api}/verify`, {
                 method: 'get',
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`
                 },
-            });
-            if (resp.ok) {
-                const data = await resp.json();
-                setAuth(true);
-                setAuthUser(data);
-                navigate("/");
-            }
+            })
+                .then(res => res.json())
+                .then(user => {
+                    setAuth(true);
+                    setAuthUser(user);
+                    navigate("/");
+                });
         }
         else {
             sethasError(true);

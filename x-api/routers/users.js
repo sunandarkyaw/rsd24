@@ -63,4 +63,38 @@ router.post("/login", async (req, res) => {
     });
 });
 
+router.post("/register", async (req, res) => {
+    const {
+        name,
+        handle,
+        password,
+        profile,
+    } = req.body;
+
+    if (!name || !handle || !password) {
+        return res.status(400).json({
+            msg: 'name or handle or password required'
+        });
+    }
+    let hash = await bcrypt.hash(password, 10);
+    let data = {
+        name: name,
+        handle: handle,
+        password: hash,
+        profile: profile,
+        created: new Date(),
+        followers: [],
+    }
+
+    try {
+        const result = await xuser.insertOne(data);
+        data._id = result.insertedId;
+        return res.json(data);
+    }
+    finally {
+        console.log("Register done.");
+    }
+});
+
+
 module.exports = { usersRouter: router };
