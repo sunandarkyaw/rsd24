@@ -17,7 +17,7 @@ import { useAuth } from "../providers/AuthProvider";
 export default function AppDrawer() {
     const { openDrawer, setOpenDrawer } = useUIState();
     const navigate = useNavigate();
-    const { auth, setAuth } = useAuth();
+    const { auth, setAuth, authUser, setAuthUser } = useAuth();
 
     return <Drawer anchor="left" open={openDrawer}
         onClose={() => {
@@ -39,11 +39,13 @@ export default function AppDrawer() {
                                 width: 98,
                                 height: 98,
                                 background: pink[500],
-                            }}>A</Avatar>
+                            }}>{authUser.name[0]}</Avatar>
 
                             <Box sx={{ ml: 3 }}>
-                                <Typography sx={{ fontSize: 21, fontWeight: "bold", color: blue[500] }}>Alice</Typography>
-                                <Typography sx={{ fontSize: 16, color: grey[600], mt: -1 }}>@ Su Nandar</Typography>
+                                <Typography sx={{ fontSize: 21, fontWeight: "bold", color: blue[500] }}>
+                                    {authUser.name}</Typography>
+                                <Typography sx={{ fontSize: 16, color: grey[600], mt: -1 }}>
+                                    {authUser.handle}</Typography>
                             </Box>
                         </Box></>
                 )}
@@ -75,6 +77,9 @@ export default function AppDrawer() {
                             <ListItemButton onClick={() => {
                                 setAuth(false);
                                 setOpenDrawer(false);
+                                setAuthUser({});
+                                localStorage.removeItem("token");
+                                navigate("/login");
                             }}>
                                 <ListItemIcon>
                                     <LogoutIcon />
@@ -98,7 +103,6 @@ export default function AppDrawer() {
                         </ListItem>
                         <ListItem>
                             <ListItemButton onClick={() => {
-                                setAuth(true);
                                 navigate("/login");
                                 setOpenDrawer(false);
                             }}>

@@ -1,31 +1,78 @@
 import { Box, TextField, Typography, Button, Alert } from "@mui/material";
 import { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../providers/AuthProvider";
 
 export default function Login() {
 
     const handleRef = useRef();
     const passwordRef = useRef();
     const [hasError, sethasError] = useState(false);
+    const { auth, setAuth } = useAuth();
+    const { authUser, setAuthUser } = useAuth();
+    const [errormessage, seterrormessage] = useState('');
+    const navigate = useNavigate();
+
+    const api = import.meta.env.VITE_API_URL;
+
+    const loginUser = async (subject) => {
+        if (!subject) return false;
+
+        const res = await fetch(`${api}/login`, {
+            method: 'post',
+            body: JSON.stringify(subject),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (res.ok) {            
+            const data = await res.json();
+            localStorage.setItem("token", data.token);
+
+            const resp = await fetch(`${api}/verify`, {
+                method: 'get',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                },
+            });
+            if (resp.ok) {
+                const data = await resp.json();
+                setAuth(true);
+                setAuthUser(data);
+                navigate("/");
+            }
+        }
+        else {
+            sethasError(true);
+            seterrormessage('invalid handle or password');
+        }
+    }
 
     return <Box sx={{ mt: 2 }}>
         <Typography variant="h4">
             Login
         </Typography>
         <Box sx={{ mt: 4 }}>
-            <form onSubmit={e => {
+            <form onSubmit={async e => {
                 e.preventDefault();
-                if (!handleRef.current.value || !passwordRef.current.value) {
+                const handle = handleRef.current.value;
+                const password = passwordRef.current.value;
+                if (!handle || !password) {
                     sethasError(true);
+                    seterrormessage('handle or password required');
                 }
                 else {
                     sethasError(false);
+                    await loginUser({
+                        handle, password
+                    })
                 }
                 return false;
             }}>
                 {hasError && (
                     <Alert severity="warning" sx={{ mb: 4 }}>
-                        handle or password required
+                        {errormessage}
                     </Alert>
                 )}
                 <TextField inputRef={handleRef} label="UserName" variant="outlined" sx={{ mb: 2 }} fullWidth />
