@@ -8,7 +8,7 @@ export default function Layout() {
         <Box>
             <AppDrawer />
             <Header />
-            <Container maxWidth="sm">
+            <Container maxWidth="sm" sx={{ mt: 5 }}>
                 <Outlet />
             </Container>
         </Box>

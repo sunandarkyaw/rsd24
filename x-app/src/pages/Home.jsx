@@ -1,10 +1,30 @@
-import { Box, Typography } from "@mui/material";
-
+import { Box } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useAuth } from "../providers/AuthProvider";
+import { PostCard } from "../componenets/PostCard";
 
 export default function Home() {
-    return <Box xs={{ mt: 4 }}>
-        <Typography variant="h4">
-            Home
-        </Typography>
-    </Box>;
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [posts, setPosts] = useState([]);
+
+    useEffect(() => {
+        (async () => {
+            setIsLoading(true);
+            const api = import.meta.env.VITE_API_URL;
+            const res = await fetch(`${api}/posts`);
+            const data = await res.json();
+
+            setPosts(data);
+            setIsLoading(false);
+        })();
+    }, []);
+
+    return (
+        <Box>
+            {isLoading ? (<Box>Loading...</Box>) : (
+                posts.map(item => <PostCard post={item} key={item._id} />)
+            )}
+        </Box>
+    )
 }
