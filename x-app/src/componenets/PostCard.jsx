@@ -1,13 +1,10 @@
 import { Box, Typography, Card, CardContent, CardActionArea, IconButton, Button, ButtonGroup, Avatar } from "@mui/material";
-import { MoreVert as MenuIcon, FavoriteBorder as LikeIcon, Comment as CommentIcon, Favorite as LikedIcon } from "@mui/icons-material";
-import { blue, green, pink, grey } from "@mui/material/colors";
+import { MoreVert as MenuIcon, Comment as CommentIcon } from "@mui/icons-material";
+import { blue, green, grey } from "@mui/material/colors";
 import { format } from 'date-fns';
-import { useAuth } from "../providers/AuthProvider";
+import { LikeButton } from "./LikeButton";
 
-
-export function PostCard({ post }) {
-
-    const { auth, authUser } = useAuth();
+export function PostCard({ post, like, unlike }) {
 
     return (<Card sx={{ mb: 2 }}>
         <CardContent>
@@ -30,21 +27,7 @@ export function PostCard({ post }) {
                 </Typography>
             </CardActionArea>
             <Box sx={{ display: "flex", justifyContent: "space-around" }}>
-                <ButtonGroup>
-                    <IconButton>{auth && post.likes ? (
-                        post.likes.find(
-                            like => like === authUser._id
-                        ) ? (
-                            <LikedIcon sx={{ color: pink[500] }} />
-                        ) : (
-                            <LikeIcon sx={{ color: pink[500] }} />
-                        )
-                    ) : (
-                        <LikeIcon sx={{ color: pink[500] }} />
-                    )}
-                    </IconButton>
-                    <Button variant="text">{post.likes ? post.likes.length : 0}</Button>
-                </ButtonGroup>
+                <LikeButton post={post} like={like} unlike={unlike} />
                 <ButtonGroup>
                     <IconButton><CommentIcon sx={{ color: blue[500] }} /></IconButton>
                     <Button variant="text">{post.comments ? post.comments.length : 0}</Button>

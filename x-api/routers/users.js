@@ -96,5 +96,13 @@ router.post("/register", async (req, res) => {
     }
 });
 
+router.get("/users/likes/:id", async (req, res) => {
+    const { id } = req.params;
+    const post = await xdb.collection("posts").findOne({ _id: new ObjectId(id) });
+    const users = await xusers.find({ _id: { $in: post.likes } }).toArray();
+
+    return res.json(users);
+})
+
 
 module.exports = { usersRouter: router };

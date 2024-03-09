@@ -12,6 +12,8 @@ const mongo = new MongoClient(process.env.MONGO_HOST);
 const xdb = mongo.db("x");
 const xpost = xdb.collection("posts");
 
+const { auth } = require("../middlewares/auth");
+
 router.get("/posts", async (req, res) => {
     const data = await xpost.aggregate([
         {
@@ -46,6 +48,40 @@ router.get("/posts/:id", async (req, res) => {
         { _id: new ObjectId(id) },
         { projection: { password: 0 } });
     return res.json(data);
+})
+
+router.put("/posts/like/:id", auth, async (req, res) => {
+    const { id } = req.params;
+    const user = res.locals.user;
+
+    const post = await xpost.findOne({ _id: new ObjectId(id) });
+    const likes = [...post.likes, user._id];
+
+    await xpost.updateOne({
+        _id: new ObjectId(id)
+    },
+        {
+            $set: { likes }
+        });
+
+    return res.json(likes);
+})
+
+router.put("/posts/unlike/:id", auth, async (req, res) => {
+    const { id } = req.params;
+    const user = res.locals.user;
+
+    const post = await xpost.findOne({ _id: new ObjectId(id) });
+    const likes = post.likes.filter(item => item.toString() != user._id.toString());
+
+    await xpost.updateOne({
+        _id: new ObjectId(id)
+    },
+        {
+            $set: { likes }
+        });
+
+    return res.json(likes);
 })
 
 
