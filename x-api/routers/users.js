@@ -15,7 +15,27 @@ const xuser = xdb.collection("users");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+const multer = require("multer");
+const coverUpload = multer({ dest: "photos/covers" });
+const profileUpload = multer({ dest: "photos/profiles" });
+
 const { auth } = require("../middlewares/auth");
+
+router.post("/users/profile/", auth, profileUpload.single("profile"), async (req, res) => {
+    const { id } = res.locals.user._id;
+    const { fileName } = req.file.filename;
+
+    const result = await xuser.updateOne(
+        {
+            _id: new ObjectId(id)
+        },
+        {
+            $set: { $profile: fileName }
+        }
+    );
+
+    return res.json(result);
+})
 
 router.get("/verify", auth, (req, res) => {
     return res.json(res.locals.user);

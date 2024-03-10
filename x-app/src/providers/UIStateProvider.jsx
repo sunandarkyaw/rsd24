@@ -7,7 +7,18 @@ export function useUIState() {
 }
 export default function UIStateProvider({ children }) {
     const [openDrawer, setOpenDrawer] = useState(false);
-    return <UIStateContext.Provider value={{ openDrawer, setOpenDrawer }}>
+    const [openFeedback, setOpenFeedback] = useState(false);
+    const [feedbackMessage, setFeedbackMessage] = useState("");
+
+    return <UIStateContext.Provider value=
+        {{
+            openDrawer,
+            setOpenDrawer,
+            openFeedback,
+            setOpenFeedback,
+            feedbackMessage,
+            setFeedbackMessage
+        }}>
         {children}
     </UIStateContext.Provider>
 }

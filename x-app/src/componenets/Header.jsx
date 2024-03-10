@@ -1,18 +1,30 @@
-import { AppBar, Toolbar, IconButton, Box } from "@mui/material";
 import {
-    Menu as MenuIcon, X as XIcon, Notifications as NotiIcon,
-    LightMode as LightModeIcon, DarkMode as DarkModeIcon
+    DarkMode as DarkModeIcon,
+    LightMode as LightModeIcon,
+    Menu as MenuIcon,
+    Notifications as NotiIcon,
+    X as XIcon,
+    ArrowBack as BackIcon,
+    People as UsersIcon,
 } from "@mui/icons-material";
-import { useUIState } from "../providers/UIStateProvider";
+import { AppBar, Badge, Box, IconButton, Toolbar } from "@mui/material";
 import { useAppTheme } from "../providers/AppThemeProvider";
+import { useUIState } from "../providers/UIStateProvider";
+import { useLocation, useNavigate } from "react-router-dom";
 
 
 export default function Header() {
     const { setOpenDrawer } = useUIState(true);
     const { mode, setMode } = useAppTheme();
 
-    return <AppBar position="static" sx={{ bgcolor: "header.background" }}>
+    const { pathName } = useLocation();
+    const navigate = useNavigate();
+
+    return <AppBar position="static">
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+            {pathName === "/" ? (
+                <IconButton></IconButton>
+            ) : (<IconButton></IconButton>)}
             <IconButton edge="start" color="inherit" onClick={() => {
                 setOpenDrawer(true);
             }}>
@@ -32,7 +44,9 @@ export default function Header() {
                         <DarkModeIcon />
                     </IconButton>)}
                 <IconButton color="inherit" edge="end">
-                    <NotiIcon />
+                    <Badge badgeContent={1} color="error">
+                        <NotiIcon />
+                    </Badge>
                 </IconButton>
             </Box>
         </Toolbar>

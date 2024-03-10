@@ -1,10 +1,13 @@
-import { Box, Typography, Card, CardContent, CardActionArea, IconButton, Button, ButtonGroup, Avatar } from "@mui/material";
-import { MoreVert as MenuIcon, Comment as CommentIcon } from "@mui/icons-material";
+import { Box, Typography, Card, CardContent, CardActionArea, IconButton, Button, ButtonGroup, Avatar, Menu, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
+import { MoreVert as MenuIcon, Comment as CommentIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { blue, green, grey } from "@mui/material/colors";
 import { format } from 'date-fns';
 import { LikeButton } from "./LikeButton";
+import { useState } from "react";
 
 export function PostCard({ post, like, unlike }) {
+    const [showMenu, setShowMenu] = useState(false);
+    const [menuPosition, setMenuPosition] = useState(null);
 
     return (<Card sx={{ mb: 2 }}>
         <CardContent>
@@ -19,7 +22,29 @@ export function PostCard({ post, like, unlike }) {
                         <Typography sx={{ color: grey[500], fontSize: 18 }}>{post.owner.handle}</Typography>
                     </Box>
                 </Box>
-                <IconButton><MenuIcon /></IconButton>
+                <Box>
+                    <IconButton onClick={e => {
+                        setShowMenu(true);
+                        setMenuPosition(e.currentTarget);
+                    }}>
+                        <MenuIcon />
+                    </IconButton>
+                    <Menu
+                        anchorEl={menuPosition}
+                        open={showMenu}
+                        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                        transformOrigin={{ vertical: "top", horizontal: "right" }}
+                        onClose={() => {
+                            setShowMenu(false);
+                        }}>
+                        <MenuItem>
+                            <ListItemIcon>
+                                <DeleteIcon color="error" />
+                            </ListItemIcon>
+                            <ListItemText primary="Delete" />
+                        </MenuItem>
+                    </Menu>
+                </Box>
             </Box>
             <CardActionArea>
                 <Typography sx={{ py: 2, px: 1 }}>

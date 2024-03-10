@@ -66,7 +66,10 @@ export default function AppDrawer() {
                             </ListItemButton>
                         </ListItem>
                         <ListItem>
-                            <ListItemButton>
+                            <ListItemButton onClick={() => {
+                                setOpenDrawer(false);
+                                navigate(`/profile/${authUser._id}`)
+                            }}>
                                 <ListItemIcon>
                                     <ProfileIcon />
                                 </ListItemIcon>
