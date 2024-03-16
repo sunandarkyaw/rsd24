@@ -10,8 +10,10 @@ app.use("/static", express.static("./photos"));
 
 const { usersRouter } = require("./routers/users");
 const { postsRouter } = require("./routers/posts");
+const { notisRouter } = require("./routers/notis");
 app.use(usersRouter);
 app.use(postsRouter);
+app.use(notisRouter);
 app.listen(process.env.PORT, () => {
     console.log(`X API running at ${process.env.PORT}`);
 })

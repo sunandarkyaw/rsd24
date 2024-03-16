@@ -76,10 +76,28 @@ router.get("/posts/profile/:id", async (req, res) => {
 
 router.get("/posts/:id", async (req, res) => {
     const { id } = req.params;
-    const data = await xpost.findOne(
-        { _id: new ObjectId(id) },
-        { projection: { password: 0 } });
-    return res.json(data);
+    const data = await xpost.aggregate([
+        { $match: { type: "post" } },
+        { $match: { _id: new ObjectId(id) } },
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner"
+            }
+        },
+        {
+            $lookup: {
+                from: "posts",
+                localField: "_id",
+                foreignField: "origin",
+                as: "comment"
+            }
+        },
+        { $unwind: "$owner" }
+    ]).toArray();
+    return res.json(data[0]);
 })
 
 router.put("/posts/like/:id", auth, async (req, res) => {

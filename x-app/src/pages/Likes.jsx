@@ -1,4 +1,4 @@
-import { Avatar, ListItemAvatar, ListItemButton, ListItemSecondaryAction, ListItemText } from "@mui/material";
+import { Avatar, ListItemAvatar, ListItemSecondaryAction, ListItemText } from "@mui/material";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 

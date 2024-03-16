@@ -1,18 +1,21 @@
 import {
-    Drawer, Box, Avatar, Typography,
-    List, ListItem, ListItemButton, ListItemIcon, ListItemText
-} from "@mui/material";
-import { useUIState } from "../providers/UIStateProvider";
-import { pink, blue, grey } from '@mui/material/colors';
-import {
-    PersonAdd as RegisterIcon,
-    Person as ProfileIcon,
     Home as HomeIcon,
     Login as LoginIcon,
     Logout as LogoutIcon,
+    Person as ProfileIcon,
+    PersonAdd as RegisterIcon,
 } from "@mui/icons-material";
+import {
+    Avatar,
+    Box,
+    Drawer,
+    List, ListItem, ListItemButton, ListItemIcon, ListItemText,
+    Typography
+} from "@mui/material";
+import { blue, grey, pink } from '@mui/material/colors';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../providers/AuthProvider";
+import { useUIState } from "../providers/UIStateProvider";
 
 export default function AppDrawer() {
     const { openDrawer, setOpenDrawer } = useUIState();

@@ -11,18 +11,35 @@ import { AppBar, Badge, Box, IconButton, Toolbar } from "@mui/material";
 import { useAppTheme } from "../providers/AppThemeProvider";
 import { useUIState } from "../providers/UIStateProvider";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useAuth } from "../providers/AuthProvider";
 
 
 export default function Header() {
-    const { setOpenDrawer } = useUIState(true);
+    const { setOpenDrawer, notiCount, setNotiCount } = useUIState(true);
     const { mode, setMode } = useAppTheme();
+    const auth = useAuth();
 
-    const { pathName } = useLocation();
+    const pathName = useLocation();
     const navigate = useNavigate();
+    const api = import.meta.env.VITE_API_URL;
+    const token = localStorage.getItem("token");
+
+    useEffect(() => {
+        (async () => {
+            const res = await fetch(`${api}/notis`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            const notis = await res.json();
+            setNotiCount(notis.filter(noti => !noti.read).length);
+        })();
+    }, [auth, notiCount]);
 
     return <AppBar position="static">
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-            {/* {pathName === "/" ? (
+            {(pathName && pathName.pathname === "/") ? (
                 <IconButton
                     edge="start"
                     color="inherit"
@@ -39,14 +56,14 @@ export default function Header() {
                         navigate(-1);
                     }}>
                     <BackIcon />
-                </IconButton>)} */}
+                </IconButton>
+            )}
             <IconButton
-                edge="start"
                 color="inherit"
                 onClick={() => {
-                    setOpenDrawer(true);
+                    navigate("/");
                 }}>
-                <MenuIcon />
+                <XIcon />
             </IconButton>
             <Box>
                 <IconButton
@@ -66,8 +83,11 @@ export default function Header() {
                     </IconButton>)}
                 <IconButton
                     color="inherit"
-                    edge="end">
-                    <Badge badgeContent={1} color="error">
+                    edge="end"
+                    onClick={() => {
+                        navigate("/notis");
+                    }}>
+                    <Badge badgeContent={notiCount} color="error">
                         <NotiIcon />
                     </Badge>
                 </IconButton>

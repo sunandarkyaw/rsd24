@@ -10,7 +10,7 @@ export default function Home() {
     const api = import.meta.env.VITE_API_URL;
 
     const { authUser } = useAuth();
-    
+
     const like = _id => {
         const result = posts.map(post => {
             if (post._id === _id) {
@@ -48,7 +48,8 @@ export default function Home() {
         <Box>
             {isLoading ? (<Box>Loading...</Box>) : (
                 posts.map(item => <PostCard post={item} key={item._id} like={like} unlike={unlike} />)
-            )}
-        </Box>
+            )
+            }
+        </Box >
     )
 }

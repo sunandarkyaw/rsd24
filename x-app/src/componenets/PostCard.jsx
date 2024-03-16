@@ -1,10 +1,10 @@
-import { Box, Typography, Card, CardContent, CardActionArea, IconButton, Button, ButtonGroup, Avatar, Menu, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
-import { MoreVert as MenuIcon, Comment as CommentIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import { Comment as CommentIcon, Delete as DeleteIcon, MoreVert as MenuIcon } from "@mui/icons-material";
+import { Avatar, Box, Button, ButtonGroup, Card, CardActionArea, CardContent, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Typography } from "@mui/material";
 import { blue, green, grey } from "@mui/material/colors";
 import { format } from 'date-fns';
-import { LikeButton } from "./LikeButton";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { LikeButton } from "./LikeButton";
 
 export function PostCard({ post, like, unlike }) {
     const [showMenu, setShowMenu] = useState(false);
@@ -57,7 +57,9 @@ export function PostCard({ post, like, unlike }) {
                     </Menu>
                 </Box>
             </Box>
-            <CardActionArea>
+            <CardActionArea onClick={() => {
+                navigate(`/posts/${post._id}`);
+            }}>
                 <Typography sx={{ py: 2, px: 1 }}>
                     {post.body}
                 </Typography>
