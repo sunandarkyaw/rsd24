@@ -1,8 +1,8 @@
-import { IconButton, Button, ButtonGroup } from "@mui/material";
 import { FavoriteBorder as LikeIcon, Favorite as LikedIcon } from "@mui/icons-material";
+import { Button, ButtonGroup, IconButton } from "@mui/material";
 import { pink } from "@mui/material/colors";
-import { useAuth } from "../providers/AuthProvider";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../providers/AuthProvider";
 
 export function LikeButton({ post, like, unlike }) {
     const { auth, authUser } = useAuth();

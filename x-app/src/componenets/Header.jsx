@@ -22,16 +22,37 @@ export default function Header() {
 
     return <AppBar position="static">
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-            {pathName === "/" ? (
-                <IconButton></IconButton>
-            ) : (<IconButton></IconButton>)}
-            <IconButton edge="start" color="inherit" onClick={() => {
-                setOpenDrawer(true);
-            }}>
+            {/* {pathName === "/" ? (
+                <IconButton
+                    edge="start"
+                    color="inherit"
+                    onClick={() => {
+                        setOpenDrawer(true);
+                    }}>
+                    <MenuIcon />
+                </IconButton>
+            ) : (
+                <IconButton
+                    edge="start"
+                    color="inherit"
+                    onClick={() => {
+                        navigate(-1);
+                    }}>
+                    <BackIcon />
+                </IconButton>)} */}
+            <IconButton
+                edge="start"
+                color="inherit"
+                onClick={() => {
+                    setOpenDrawer(true);
+                }}>
                 <MenuIcon />
             </IconButton>
-            <XIcon />
             <Box>
+                <IconButton
+                    color="inherit" sx={{ mr: 1 }}>
+                    <UsersIcon />
+                </IconButton>
                 {mode == "dark" ?
                     (<IconButton color="inherit" onClick={() => {
                         setMode("light")
@@ -43,7 +64,9 @@ export default function Header() {
                     }}>
                         <DarkModeIcon />
                     </IconButton>)}
-                <IconButton color="inherit" edge="end">
+                <IconButton
+                    color="inherit"
+                    edge="end">
                     <Badge badgeContent={1} color="error">
                         <NotiIcon />
                     </Badge>

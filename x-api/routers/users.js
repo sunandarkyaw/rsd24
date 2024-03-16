@@ -10,119 +10,142 @@ router.use(bodyParser.json());
 const { MongoClient, ObjectId } = require("mongodb");
 const mongo = new MongoClient(process.env.MONGO_HOST);
 const xdb = mongo.db("x");
-const xuser = xdb.collection("users");
+const xusers = xdb.collection("users");
 
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const multer = require("multer");
-const coverUpload = multer({ dest: "photos/covers" });
-const profileUpload = multer({ dest: "photos/profiles" });
+const coverUpload = multer({ dest: "photos/covers/" });
+const profileUpload = multer({ dest: "photos/profiles/" });
 
 const { auth } = require("../middlewares/auth");
 
-router.post("/users/profile/", auth, profileUpload.single("profile"), async (req, res) => {
-    const { id } = res.locals.user._id;
-    const { fileName } = req.file.filename;
+router.post("/users/profile", auth, profileUpload.single("profile"), async (req, res) => {
+    const id = res.locals.user._id;
+    const { filename } = req.file;
 
-    const result = await xuser.updateOne(
+    const result = await xusers.updateOne(
+        { _id: new ObjectId(id) },
         {
-            _id: new ObjectId(id)
+            $set: { profile: filename }
         },
-        {
-            $set: { $profile: fileName }
-        }
     );
 
     return res.json(result);
-})
+});
+
+router.post(
+    "/users/cover",
+    auth,
+    coverUpload.single("cover"),
+    async (req, res) => {
+        const id = res.locals.user._id;
+        const { filename } = req.file;
+
+        const result = await xusers.updateOne(
+            { _id: new ObjectId(id) },
+            {
+                $set: { cover: filename },
+            }
+        );
+
+        return res.json(result);
+    }
+);
 
 router.get("/verify", auth, (req, res) => {
     return res.json(res.locals.user);
 });
 
 router.get("/users", auth, async (req, res) => {
-    const data = await xuser
+    const data = await xusers
         .find()
         .project({ password: 0 })
-        .limit(20).toArray();
+        .limit(20)
+        .toArray();
+
     return res.json(data);
+});
+
+router.get("/users/likes/:id", async (req, res) => {
+    const { id } = req.params;
+    const post = await xdb
+        .collection("posts")
+        .findOne({ _id: new ObjectId(id) });
+
+    const users = await xusers
+        .find({
+            _id: { $in: post.likes },
+        })
+        .toArray();
+
+    return res.json(users);
 });
 
 router.get("/users/:id", async (req, res) => {
     const { id } = req.params;
-    const data = await xuser.findOne(
+    const data = await xusers.findOne(
         { _id: new ObjectId(id) },
-        { projection: { password: 0 } });
+        { projection: { password: 0 } }
+    );
+
     return res.json(data);
-})
+});
 
 router.post("/login", async (req, res) => {
     const { handle, password } = req.body;
     if (!handle || !password) {
         return res.status(400).json({
-            msg: 'handle or password required'
+            msg: "handle or password required",
         });
     }
-    const user = await xuser.findOne(
+
+    const user = await xusers.findOne(
         { handle },
         {
             projection: {
                 followers: 0,
-                following: 0
-            }
-        });
+                following: 0,
+            },
+        }
+    );
+
     if (user) {
         if (await bcrypt.compare(password, user.password)) {
+            delete user.password;
             const token = jwt.sign(user, process.env.JWT_SECRET);
             return res.json({ token });
         }
     }
+
     return res.status(401).json({
-        msg: 'incorrect handle or password'
+        msg: "incorrect handle or password",
     });
 });
 
-router.post("/register", async (req, res) => {
-    const {
-        name,
-        handle,
-        password,
-        profile,
-    } = req.body;
-
+router.post("/users", async (req, res) => {
+    const { name, handle, profile, password } = req.body;
     if (!name || !handle || !password) {
         return res.status(400).json({
-            msg: 'name or handle or password required'
+            msg: "name, handle, password: all required",
         });
     }
-    let hash = await bcrypt.hash(password, 10);
-    let data = {
-        name: name,
-        handle: handle,
+
+    const hash = await bcrypt.hash(password, 10);
+    const user = {
+        name,
+        handle,
+        profile,
         password: hash,
-        profile: profile,
         created: new Date(),
         followers: [],
-    }
+    };
 
-    try {
-        const result = await xuser.insertOne(data);
-        data._id = result.insertedId;
-        return res.json(data);
-    }
-    finally {
-        console.log("Register done.");
-    }
+    const result = await xusers.insertOne(user);
+    user._id = result.insertedId;
+
+    return res.json(user);
 });
-
-router.get("/users/likes/:id", async (req, res) => {
-    const { id } = req.params;
-    const post = await xdb.collection("posts").findOne({ _id: new ObjectId(id) });
-    const users = await xusers.find({ _id: { $in: post.likes } }).toArray();
-
-    return res.json(users);
-})
-
 
 module.exports = { usersRouter: router };
