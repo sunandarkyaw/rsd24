@@ -32,8 +32,11 @@ export default function Header() {
                     'Authorization': `Bearer ${token}`
                 }
             });
+            console.log(auth);
             const notis = await res.json();
-            setNotiCount(notis.filter(noti => !noti.read).length);
+            const count = auth.auth ? notis.filter(noti => !noti.read).length : 0;
+            
+            setNotiCount(count);
         })();
     }, [auth, notiCount]);
 

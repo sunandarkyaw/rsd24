@@ -14,6 +14,8 @@ const xnotis = xdb.collection("notis");
 
 const { auth } = require("../middlewares/auth");
 
+const { clients } = require("../index");
+
 router.get("/notis", auth, async (req, res) => {
     const user = res.locals.user;
     const notis = await xnotis.aggregate([
@@ -32,6 +34,9 @@ router.get("/notis", auth, async (req, res) => {
         },
         {
             $unwind: "$actor"
+        },
+        {
+            $sort: { _id: -1 },
         }
     ]).toArray();
     return res.json(notis);
@@ -48,6 +53,38 @@ router.put("/notis/:id", async (req, res) => {
         });
 
     return res.json(result);
+})
+
+router.post("/notis/:type", auth, async (req, res) => {
+    const { type } = req.params;
+    const user = res.locals.user;
+    const { owner, target } = req.body
+
+    if (!owner ?? !target) {
+        return res.status(400).json({ msg: 'owner, target: required' });
+    }
+
+    try {
+        const result = await xnotis.insertOne({
+            type,
+            actor: new ObjectId(user._id),
+            msg: `${type}s your post`,
+            owner: new ObjectId(owner),
+            target: new ObjectId(target),
+            read: false,
+            created: new Date()
+        });
+
+        clients.map(client => {
+            if (client._id === user._id) {
+                client.send("Noti update");
+            }
+        })
+        return res.json(result);
+    }
+    catch (e) {
+        return res.status(500).json({ msg: e.message });
+    }
 })
 
 module.exports = { notisRouter: router };

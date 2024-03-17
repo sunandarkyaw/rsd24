@@ -92,7 +92,20 @@ router.get("/posts/:id", async (req, res) => {
                 from: "posts",
                 localField: "_id",
                 foreignField: "origin",
-                as: "comment"
+                as: "comment",
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "owner",
+                            foreignField: "_id",
+                            as: "owner"
+                        }
+                    },
+                    {
+                        $unwind: "$owner"
+                    }
+                ]
             }
         },
         { $unwind: "$owner" }
