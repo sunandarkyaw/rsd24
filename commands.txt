@@ -1,0 +1,10 @@
+docker images
+docker run ubuntu echo "Hello ubuntu" (get ubuntu image on my laptop, run image and output command)
+docker run -ti ubuntu /bin/bash (run container and start bash command)
+docker run -p 90:80 -ti ubuntu /bin/bash (localPort:dockerPort)
+docker ps (see active docker images)
+docker exec [containerID] [command] (run command in desired container)
+docker commit [containerID] [imageName] (save changes)
+docker build .
+docker tag [imageID] [imageName] (name the image)
+docker build .
